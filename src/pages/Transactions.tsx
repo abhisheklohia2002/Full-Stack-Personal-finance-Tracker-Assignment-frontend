@@ -6,6 +6,7 @@ import { toaster } from "@/components/ui/toaster";
 import TableTransaction from "@/components/table/TableTrans";
 import type { ITransaction, IType, IUser } from "@/constant";
 import TransactionDrawer from "@/components/TransactionDrawer";
+import { useAuth } from "@/auth/AuthContext";
 
 const typeCollection = createListCollection({
   items: [
@@ -62,7 +63,7 @@ export default function Transactions() {
     setTransactionDate(data.transactionDate);
     setUserId(data.userId);
   }, []);
-
+  const { user } = useAuth();
   const handleSubmit = useCallback(async () => {
     try {
       const payload = {
@@ -163,7 +164,10 @@ export default function Transactions() {
           }}
         >
           <h2 style={{ margin: 0 }}>Transactions</h2>
-          <Button onClick={handleAdd}>Add</Button>
+          {
+            user?.role !== 'read-only' ? (<Button onClick={handleAdd}>Add</Button>):null
+          }
+          
         </div>
         <TableTransaction
           transaction={transaction}
