@@ -4,6 +4,7 @@ import Dashboard from "../layout/Dashboard";
 import NonAuth from "../layout/NonAuth";
 import Login from "../components/Login";
 import Protected from "../layout/Protected";
+import Transactions from "../pages/Transactions";
 
 export const Routers = createBrowserRouter([
   {
@@ -14,7 +15,7 @@ export const Routers = createBrowserRouter([
         element: <Protected />,
         children: [
           { index: true, element: <Dashboard /> },
-          // later: { path: "transactions", element: <Transactions /> }
+          { path: "transactions", element: <Transactions /> }
         ],
       },
       {

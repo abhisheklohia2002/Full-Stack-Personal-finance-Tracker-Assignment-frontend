@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import "./login.css";
-
+import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const { login } = useAuth();
   const [form, setForm] = useState({
     email: "",
     password: "",
     remember: false,
   });
-
+  const navigate = useNavigate();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleChange(e:any) {
+  function handleChange(e: any) {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
@@ -18,9 +20,14 @@ export default function Login() {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function handleSubmit(e:any) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Login payload:", form);
+    try {
+      await login(form.email, form.password);
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -30,7 +37,9 @@ export default function Login() {
         <p className="login-subtitle">Please sign in to continue</p>
 
         <div className="field">
-          <label className="label" htmlFor="email">Email</label>
+          <label className="label" htmlFor="email">
+            Email
+          </label>
           <input
             className="input"
             id="email"
@@ -44,7 +53,9 @@ export default function Login() {
         </div>
 
         <div className="field">
-          <label className="label" htmlFor="password">Password</label>
+          <label className="label" htmlFor="password">
+            Password
+          </label>
           <input
             className="input"
             id="password"
@@ -69,7 +80,9 @@ export default function Login() {
             Remember me
           </label>
         </div>
-        <button className="btn" type="submit">Sign in</button>
+        <button className="btn" type="submit">
+          Sign in
+        </button>
       </form>
     </div>
   );

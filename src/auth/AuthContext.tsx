@@ -13,50 +13,48 @@ type AuthUser = {
 
 type AuthContextType = {
   user: AuthUser | null;
-  loading: boolean;
+  //   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  //   loading: true,
+
   login: async () => {},
   logout: async () => {},
 });
 
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const me = async () => {
-    try {
-      const res = await api.get("/api/auth/me");
-      setUser(res.data?.data || null);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    me();
+    const self = async () => {
+      try {
+        const res = await api.get("/api/auth/self");
+        setUser(res.data?.user || null);
+      } catch {
+        setUser(null);
+      }
+    };
+    self();
   }, []);
 
   const login = async (email: string, password: string) => {
     const res = await api.post("/api/auth/login", { email, password });
+    console.log(res, "sss");
     setUser(res.data?.data || null);
   };
 
   const logout = async () => {
-    await api.post("/api/auth/logout");
+    await api.post("/api/auth/logout",{});
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
