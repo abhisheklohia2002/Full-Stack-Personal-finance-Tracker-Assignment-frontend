@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Navbar({
   appName = "Finance Tracker",
@@ -8,20 +8,17 @@ export default function Navbar({
 }) {
   const { logout, user } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const linkStyle = (key:any) => ({
+  const linkStyle = ({ isActive }: { isActive: boolean }) => ({
     padding: "10px 12px",
     borderRadius: 10,
     textDecoration: "none",
     cursor: "pointer",
     border: "1px solid transparent",
-    background: current === key ? "#f3f4f6" : "transparent",
+    background: isActive ? "#f3f4f6" : "transparent",
     color: "#111827",
-    fontWeight: current === key ? 600 : 500,
+    fontWeight: isActive ? 600 : 500,
+    borderBottom: isActive ? "2px solid #111827" : "2px solid transparent",
   });
-  const navigate = useNavigate()
-  const onNavigate = (nav: string) => {
-        navigate(nav)
-  };
   const onLogout = () => {
     logout();
   };
@@ -73,18 +70,12 @@ export default function Navbar({
         </div>
 
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <span
-            style={linkStyle("dashboard")}
-            onClick={() => onNavigate("dashboard")}
-          >
+          <NavLink to="/" style={linkStyle}>
             Dashboard
-          </span>
-          <span
-            style={linkStyle("transactions")}
-            onClick={() => onNavigate("transactions")}
-          >
+          </NavLink>
+          <NavLink to="/transactions" style={linkStyle}>
             Transactions
-          </span>
+          </NavLink>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

@@ -27,6 +27,10 @@ interface ITransaction {
 
 export default function Transactions() {
   const [transaction, setTransaction] = useState([]);
+
+  const handleEdit = (id:number)=>{
+    console.log(id,'id')
+  }
   useEffect(() => {
     const transaction = async () => {
       const transaction = await api.get("/api/transaction/");
@@ -82,7 +86,9 @@ export default function Transactions() {
                   </td>
                   <td style={{ padding: 12 }}>{t.user.email}</td>
                   <td style={{ padding: 12, textAlign: "right" }}>
-                    <button style={{ marginRight: 8 }}>Edit</button>
+                    <button style={{ marginRight: 8 }}
+                    onClick={()=>handleEdit(t.id)}
+                    >Edit</button>
                     <button>Delete</button>
                   </td>
                 </tr>

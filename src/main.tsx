@@ -6,13 +6,16 @@ import { RouterProvider } from "react-router-dom";
 import { Routers } from "./Routes/Routes.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "../src/config/chartConfig.ts";
+import { Provider } from "@/components/ui/provider"
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Provider>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={Routers} />
       </QueryClientProvider>
     </AuthProvider>
+    </Provider>
   </StrictMode>,
 );
