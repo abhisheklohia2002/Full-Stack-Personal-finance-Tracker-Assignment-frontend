@@ -1,10 +1,10 @@
 import React from "react";
 import { useAuth } from "../auth/AuthContext";
-import { NavLink, useNavigate } from "react-router-dom";
-
+import { NavLink } from "react-router-dom";
+import { Button, HStack, Stack, Text } from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 export default function Navbar({
   appName = "Finance Tracker",
-  current = "dashboard",
 }) {
   const { logout, user } = useAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,13 +89,25 @@ export default function Navbar({
               background: "#fafafa",
             }}
           >
-            <span style={{ fontWeight: 700 }}>
-              {user?.firstName + " " + user?.lastName}
-            </span>{" "}
-            <span style={{ color: "#6b7280" }}>({user?.role})</span>
+            <Stack gap="8">
+              <HStack key={user?.email} gap="4">
+                <Avatar.Root>
+                  <Avatar.Fallback
+                    name={user?.firstName + " " + user?.lastName}
+                  />
+                  <Avatar.Image />
+                </Avatar.Root>
+                <Stack gap="0">
+                  <Text fontWeight="medium">{user?.firstName}</Text>
+                  <Text color="red" textStyle="sm">
+                    {user?.role}
+                  </Text>
+                </Stack>
+              </HStack>
+            </Stack>
           </div>
 
-          <button
+          <Button
             onClick={onLogout}
             style={{
               padding: "10px 12px",
@@ -107,7 +119,7 @@ export default function Navbar({
             }}
           >
             Logout
-          </button>
+          </Button>
         </div>
       </div>
     </div>
