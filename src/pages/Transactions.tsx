@@ -51,8 +51,7 @@ export default function Transactions() {
     setAmount("0.00");
     setCategory("");
     setTransactionDate("");
-    setUserId('');
-
+    setUserId("");
   }, []);
   const handleEdit = useCallback((data: ITransaction) => {
     setSelected(data);
@@ -63,6 +62,10 @@ export default function Transactions() {
     setTransactionDate(data.transactionDate);
     setUserId(data.userId);
   }, []);
+
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+const [filterType, setFilterType] = useState<"all" | "income" | "expense">("all");
+const [filterCategory, setFilterCategory] = useState<string>("all");
   const { user } = useAuth();
   const handleSubmit = useCallback(async () => {
     try {
@@ -71,7 +74,7 @@ export default function Transactions() {
         amount: String(Number(amount).toFixed(2)),
         category: category.trim(),
         transactionDate,
-        user:+userId,
+        user: +userId,
       };
       if (
         !payload.category ||
@@ -86,8 +89,8 @@ export default function Transactions() {
       }
       if (mode === "add") {
         const res = await api.post("/api/transaction/", payload);
-        console.log(res,'create')
-        const created: ITransaction = {...res?.data?.txt,email:userId};
+        console.log(res, "create");
+        const created: ITransaction = { ...res?.data?.txt, email: userId };
         setTransaction((prev) => [created, ...(prev ?? [])]);
         toaster.create({
           title: "Transaction Added",
@@ -101,12 +104,16 @@ export default function Transactions() {
           ...payload,
           updatedAt: new Date().toISOString(),
         };
-        console.log(updated.user.email,'update')
+        console.log(updated.user.email, "update");
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setTransaction((prev: any) =>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          prev.map((tx: any) => (tx.id === selected.id ? {...updated,email:updated.user.email} : tx)),
+          prev.map((tx: any) =>
+            tx.id === selected.id
+              ? { ...updated, email: updated.user.email }
+              : tx,
+          ),
         );
         toaster.create({
           title: "Transaction Updated",
@@ -122,7 +129,7 @@ export default function Transactions() {
         description: error?.response?.data?.message ?? "Request failed",
       });
     }
-  }, [mode, selected, type, amount, category, transactionDate,userId]);
+  }, [mode, selected, type, amount, category, transactionDate, userId]);
 
   useEffect(() => {
     const transaction = async () => {
@@ -149,6 +156,28 @@ export default function Transactions() {
     fetchUsers();
   }, []);
 
+  const filteredTransactions = useMemo(() => {
+  const list = transaction ?? [];
+
+  return list.filter((t) => {
+    const matchType = filterType === "all" || t.type === filterType;
+
+    // assuming t.category is string (you are using setCategory(data.category))
+    // and category API returns name like "Food"
+    const matchCategory =
+      filterCategory === "all" || (t.category || "").toLowerCase() === filterCategory.toLowerCase();
+
+    return matchType && matchCategory;
+  });
+}, [transaction, filterType, filterCategory]);
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    const res = await api.get("/api/category"); 
+    setCategories(res.data?.data ?? []);
+  };
+  fetchCategories();
+}, []);
   return (
     <>
       <Navbar />
@@ -164,13 +193,62 @@ export default function Transactions() {
           }}
         >
           <h2 style={{ margin: 0 }}>Transactions</h2>
-          {
-            user?.role !== 'read-only' ? (<Button onClick={handleAdd}>Add</Button>):null
-          }
-          
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              flexWrap: "wrap",
+              marginTop: 12,
+            }}
+          >
+            <select
+            style={{
+              fontSize:'14px',
+              padding:"10px"
+            }}
+              value={filterType}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onChange={(e) => setFilterType(e.target.value as any)}
+              
+            >
+              <option value="all">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+
+            <select
+              style={{
+              fontSize:'14px',
+              padding:"10px"
+            }}
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              
+            >
+              <option value="all">All Categories</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFilterType("all");
+                setFilterCategory("all");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+          {user?.role !== "read-only" ? (
+            <Button onClick={handleAdd}>Add</Button>
+          ) : null}
         </div>
         <TableTransaction
-          transaction={transaction}
+          transaction={filteredTransactions}
           handleDelete={handleDelete}
           handleEdit={handleEdit}
         />
