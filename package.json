@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
+  "dev": "vite",
+  "typecheck": "tsc -b",
+  "lint": "eslint .",
+  "build": "vite build",
+  "preview": "vite preview"
+},
   "dependencies": {
     "@chakra-ui/react": "^3.33.0",
     "@emotion/react": "^11.14.0",
