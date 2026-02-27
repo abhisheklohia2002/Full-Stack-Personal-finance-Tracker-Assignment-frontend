@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
   "dev": "vite",
-  "typecheck": "tsc -b",
-  "lint": "eslint .",
   "build": "vite build",
-  "preview": "vite preview"
+  "start": "serve -s dist -l $PORT"
 },
   "dependencies": {
     "@chakra-ui/react": "^3.33.0",
@@ -22,7 +20,8 @@
     "react-dom": "^19.2.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.13.1",
-    "recharts": "^3.7.0"
+    "recharts": "^3.7.0",
+    "serve": "^14.2.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
